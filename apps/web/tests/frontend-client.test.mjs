@@ -55,11 +55,28 @@ test("keeps legacy BLOCK history readable without recasting it", async t => {
   assert.deepEqual(await getTransactionEvaluations(), expected);
 });
 
-test("surfaces API error messages and uses fallback for unreadable error bodies", async t => {
+test("replaces English API errors with Spanish messages per operation", async t => {
   const originalFetch = globalThis.fetch;
   t.after(() => { globalThis.fetch = originalFetch; });
   globalThis.fetch = async () => Response.json({ error: "Unable to evaluate transaction" }, { status: 503 });
-  await assert.rejects(createTransactionEvaluation(input), { message: "Unable to evaluate transaction" });
+  await assert.rejects(createTransactionEvaluation(input), {
+    name: "ApiError", status: 503,
+    message: "No se pudo evaluar la transacción. La base de datos o el proveedor de IA no respondieron.",
+  });
   globalThis.fetch = async () => new Response("not-json", { status: 503 });
-  await assert.rejects(getTransactionEvaluations(), { message: "No se pudo completar la solicitud." });
+  await assert.rejects(getTransactionEvaluations(), { name: "ApiError", status: 503, message: "No se pudo cargar el historial." });
+});
+
+test("exposes per-field validation errors from a 400 response", async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  const fields = { currency: "Expected a three-letter uppercase currency code" };
+  globalThis.fetch = async () => Response.json({ error: "Invalid transaction", fields }, { status: 400 });
+  await assert.rejects(createTransactionEvaluation(input), error => {
+    assert.equal(error.name, "ApiError");
+    assert.equal(error.status, 400);
+    assert.equal(error.message, "Revisá los datos marcados.");
+    assert.deepEqual(error.fields, fields);
+    return true;
+  });
 });

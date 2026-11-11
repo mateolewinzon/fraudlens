@@ -19,13 +19,17 @@ export type TransactionEvaluation = TransactionInput & {
   reasons?: string[];
   signals?: string[];
   rules_applied?: string[];
+  model_id?: string;
+  assessment_version?: string;
+  history_count?: number;
   created_at: string;
   updated_at: string;
 };
 
 export type EvaluationResult = Pick<
   TransactionEvaluation,
-  "transaction_evaluation_id" | "transaction_id" | "risk_score" | "decision" | "reasons" | "signals"
+  "transaction_evaluation_id" | "transaction_id" | "risk_score" | "decision" | "reasons" | "signals" |
+  "rules_applied" | "model_id" | "assessment_version" | "history_count"
 >;
 
 export type EvaluationPage = {
@@ -63,13 +67,34 @@ export function toTransactionInput(form: EvaluationForm): TransactionInput {
   };
 }
 
-async function parseResponse<T>(response: Response): Promise<T> {
+/** API failure with a Spanish message for the UI and the server's per-field errors, if any. */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly fields: Record<string, string>;
+
+  constructor(message: string, status: number, fields: Record<string, string> = {}) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.fields = fields;
+  }
+}
+
+function readFields(body: unknown): Record<string, string> {
+  if (!body || typeof body !== "object" || !("fields" in body)) return {};
+  const fields = body.fields;
+  if (!fields || typeof fields !== "object" || Array.isArray(fields)) return {};
+  return Object.fromEntries(Object.entries(fields).filter((entry): entry is [string, string] => typeof entry[1] === "string"));
+}
+
+async function parseResponse<T>(response: Response, failureMessage: string): Promise<T> {
   const body: unknown = await response.json().catch(() => null);
   if (!response.ok) {
-    const message = body && typeof body === "object" && "error" in body && typeof body.error === "string"
-      ? body.error
-      : "No se pudo completar la solicitud.";
-    throw new Error(message);
+    const fields = readFields(body);
+    const message = response.status === 400 && Object.keys(fields).length
+      ? "Revisá los datos marcados."
+      : response.status === 400 ? "La solicitud no es válida." : failureMessage;
+    throw new ApiError(message, response.status, fields);
   }
   return body as T;
 }
@@ -77,7 +102,7 @@ async function parseResponse<T>(response: Response): Promise<T> {
 export async function getTransactionEvaluations(offset = 0, limit = 10, signal?: AbortSignal): Promise<EvaluationPage> {
   const query = new URLSearchParams({ limit: String(limit), offset: String(offset) });
   const response = await fetch(`/api/transaction-evaluations?${query}`, { cache: "no-store", signal });
-  return parseResponse<EvaluationPage>(response);
+  return parseResponse<EvaluationPage>(response, "No se pudo cargar el historial.");
 }
 
 export async function createTransactionEvaluation(input: TransactionInput): Promise<EvaluationResult> {
@@ -86,5 +111,8 @@ export async function createTransactionEvaluation(input: TransactionInput): Prom
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
-  return parseResponse<EvaluationResult>(response);
+  return parseResponse<EvaluationResult>(
+    response,
+    "No se pudo evaluar la transacción. La base de datos o el proveedor de IA no respondieron.",
+  );
 }
