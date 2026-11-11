@@ -2,22 +2,27 @@
 
 import { useEffect, useRef, useState } from "react";
 import { DEMO_TRANSACTIONS, INCOMING_TEMPLATES } from "@/lib/demo/data";
-import { EXAMPLE_CONFIG, evaluateIncoming, type DemoConfig, type DemoTransaction } from "@/lib/demo/rules";
+import {
+  EXAMPLE_CONFIG, evaluateIncoming, recordConfigChange, type ConfigChange, type DemoConfig, type DemoTransaction,
+} from "@/lib/demo/rules";
+import ConfigPanel from "./config-panel";
 import TransactionDetail from "./transaction-detail";
 import TransactionMonitor from "./transaction-monitor";
 
 const ARRIVAL_EVERY_MS = 7000;
 const MAX_ROWS = 40;
 
-type TabId = "monitor";
+type TabId = "monitor" | "config";
 const TABS: { id: TabId; label: string; scope: string; stage: string }[] = [
   { id: "monitor", label: "Monitor", scope: "CU-05 · CU-06", stage: "MVP" },
+  { id: "config", label: "Configuración", scope: "CU-07 · CU-02", stage: "MVP simplificado" },
 ];
 
 /** Preview mode: everything lives in client state and nothing calls the API. */
 export default function DemoWorkspace() {
   const [tab, setTab] = useState<TabId>("monitor");
-  const [config] = useState<DemoConfig>(EXAMPLE_CONFIG);
+  const [config, setConfig] = useState<DemoConfig>(EXAMPLE_CONFIG);
+  const [changes, setChanges] = useState<ConfigChange[]>([]);
   const [transactions, setTransactions] = useState<DemoTransaction[]>([...DEMO_TRANSACTIONS]);
   const [live, setLive] = useState(true);
   const [freshId, setFreshId] = useState<string | null>(null);
@@ -35,6 +40,11 @@ export default function DemoWorkspace() {
     }, ARRIVAL_EVERY_MS);
     return () => clearInterval(timer);
   }, [live, config]);
+
+  function saveConfig(next: DemoConfig) {
+    setChanges(log => recordConfigChange(log, config, next, "Administrador (demo)", new Date()));
+    setConfig(next);
+  }
 
   const selected = transactions.find(item => item.id === selectedId) ?? null;
 
@@ -81,6 +91,7 @@ export default function DemoWorkspace() {
             {selected && <TransactionDetail item={selected} onClose={() => setSelectedId(null)} />}
           </div>
         )}
+        {tab === "config" && <ConfigPanel config={config} changes={changes} onSave={saveConfig} />}
       </div>
     </div>
   );

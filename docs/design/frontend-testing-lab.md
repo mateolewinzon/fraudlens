@@ -26,6 +26,7 @@ La página de inicio (`/`) es un laboratorio para probar la API real: `POST` y `
 - **Monitor (CU-05)**: transacciones ilustrativas que se suman solas cada 7 segundos (se puede pausar), orden por fecha o puntaje, niveles y decisiones diferenciados, y transacciones aprobadas por la regla de monto mínimo sin ejecutar el modelo.
 - **Filtros (CU-05)**: transacción, usuario, rango de fechas (inclusivo, por día local), nivel (incluye "Sin análisis") y decisión; estado vacío con "Limpiar filtros".
 - **Detalle (CU-06)**: al abrir una transacción muestra puntaje y nivel, decisión y la regla que la produjo, factores (hasta 3), datos recibidos, resumen del historial, fecha de análisis y la configuración vigente cuando se analizó.
+- **Configuración (CU-07 + CU-02)**: activar o desactivar la regla de monto mínimo, el monto mínimo y los umbrales de revisión y bloqueo, con validación (enteros de 0 a 100, bloqueo mayor que revisión, monto mayor a 0), vista de los niveles resultantes e historial de cambios (quién, cuándo y valores anteriores). Los cambios se aplican solo a las transacciones nuevas del monitor. En el MVP esta configuración es fija (decisión 0005); la pantalla muestra la evolución prevista.
 
 ## Diseño responsivo
 

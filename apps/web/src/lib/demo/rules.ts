@@ -132,3 +132,29 @@ export function filterTransactions(list: readonly DemoTransaction[], filters: De
       (!filters.decision || item.decision === filters.decision);
   });
 }
+
+export type ConfigErrors = Partial<Record<keyof DemoConfig, string>>;
+
+/** CU-07: values from 0 to 100 and no inconsistent configurations. */
+export function validateConfig(config: DemoConfig): ConfigErrors {
+  const errors: ConfigErrors = {};
+  const isScore = (value: number) => Number.isInteger(value) && value >= 0 && value <= 100;
+  if (!isScore(config.reviewThreshold)) errors.reviewThreshold = "Ingresá un valor entero entre 0 y 100.";
+  if (!isScore(config.blockThreshold)) errors.blockThreshold = "Ingresá un valor entero entre 0 y 100.";
+  else if (!errors.reviewThreshold && config.blockThreshold <= config.reviewThreshold) {
+    errors.blockThreshold = "Tiene que ser mayor que el umbral de revisión.";
+  }
+  if (config.minAmountEnabled && !(Number.isFinite(config.minAmount) && config.minAmount > 0)) {
+    errors.minAmount = "Ingresá un monto mayor a 0.";
+  }
+  return errors;
+}
+
+export type ConfigChange = { author: string; at: string; previous: DemoConfig; next: DemoConfig };
+
+/** CU-07 audit trail: who, when and the previous values. Unchanged configs are not recorded. */
+export function recordConfigChange(log: readonly ConfigChange[], previous: DemoConfig, next: DemoConfig, author: string, at: Date): ConfigChange[] {
+  const keys = Object.keys(previous) as (keyof DemoConfig)[];
+  if (keys.every(key => previous[key] === next[key])) return [...log];
+  return [{ author, at: at.toISOString(), previous: { ...previous }, next: { ...next } }, ...log];
+}
