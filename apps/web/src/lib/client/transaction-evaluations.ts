@@ -116,3 +116,14 @@ export async function createTransactionEvaluation(input: TransactionInput): Prom
     "No se pudo evaluar la transacción. La base de datos o el proveedor de IA no respondieron.",
   );
 }
+
+/** What the lab needs from an evaluation backend: the real API or the simulated one. */
+export type EvaluationApi = {
+  create(input: TransactionInput): Promise<EvaluationResult>;
+  list(offset: number, limit: number, signal?: AbortSignal): Promise<EvaluationPage>;
+};
+
+export const realEvaluationApi: EvaluationApi = {
+  create: createTransactionEvaluation,
+  list: getTransactionEvaluations,
+};

@@ -71,7 +71,7 @@ fraudlens/
 └── package-lock.json
 ```
 
-La pantalla de inicio es un laboratorio para probar `/api/transaction-evaluations` con escenarios precargados, resultado, historial y detalle. `/?modo=demo` muestra una vista previa de funciones próximas con datos ilustrativos, sin llamar a la API. El frontend no añade endpoints ni lógica de decisión propia; ver [laboratorio de pruebas](docs/design/frontend-testing-lab.md). Las carpetas reservadas se conservan con `.gitkeep`; no implican decisiones sobre el dominio.
+La pantalla de inicio es un laboratorio para probar `/api/transaction-evaluations` con escenarios precargados, resultado, historial y detalle. `/?modo=demo` muestra una vista previa de funciones próximas con datos ilustrativos, sin llamar a la API. Para presentar sin base de datos ni IA, `/?api=simulada` usa una API simulada en el navegador. El frontend no añade endpoints ni lógica de decisión propia; ver [laboratorio de pruebas](docs/design/frontend-testing-lab.md). Las carpetas reservadas se conservan con `.gitkeep`; no implican decisiones sobre el dominio.
 
 ## Variables de entorno
 

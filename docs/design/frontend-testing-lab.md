@@ -4,6 +4,8 @@ La página de inicio (`/`) es un laboratorio para probar la API real: `POST` y `
 
 ## Laboratorio
 
+**API simulada** (`/?api=simulada`): para presentaciones sin MongoDB ni proveedor de IA. Todo corre en el navegador (`src/lib/client/mock-api.ts`), con historial inicial del usuario `demo-cliente-frecuente`, una espera breve que imita el análisis y un aviso visible en la pantalla. Las señales respetan las mismas reglas de consistencia que valida el backend; el puntaje y la decisión son de ejemplo. Se activa solo de forma explícita: la API real nunca cae a la simulación por un error. La navegación conserva el modo simulado.
+
 - **Escenarios de prueba** (`src/lib/client/scenarios.ts`): completan el formulario con un click. Son datos de entrada, no reglas: la decisión siempre la toma el servidor y ningún escenario promete un resultado.
   - *Cliente nuevo* crea un usuario distinto en cada envío (sin historial).
   - *Compra habitual*, *Tarjeta extranjera* y *Monto fuera de patrón* usan el mismo usuario (`demo-cliente-frecuente`), así que enviar *Compra habitual* varias veces le construye historial aprobado.

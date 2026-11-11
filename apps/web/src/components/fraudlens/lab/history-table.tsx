@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { formatMoney, formatRiskScore, formatShortDateTime } from "@/lib/client/presentation";
-import { getTransactionEvaluations, type EvaluationPage, type TransactionEvaluation } from "@/lib/client/transaction-evaluations";
+import type { EvaluationApi, EvaluationPage, TransactionEvaluation } from "@/lib/client/transaction-evaluations";
 import { DecisionBadge } from "./evaluation-report";
 
 const PAGE_SIZE = 8;
 
 type Props = {
+  api: EvaluationApi;
   refreshKey: number;
   selectedId: string | null;
   onSelect: (evaluation: TransactionEvaluation) => void;
@@ -15,7 +16,7 @@ type Props = {
 
 type Load = { state: "loading" } | { state: "error"; message: string } | { state: "ready"; page: EvaluationPage };
 
-export default function HistoryTable({ refreshKey, selectedId, onSelect }: Props) {
+export default function HistoryTable({ api, refreshKey, selectedId, onSelect }: Props) {
   const [offset, setOffset] = useState(0);
   const [reload, setReload] = useState(0);
   const [load, setLoad] = useState<Load>({ state: "loading" });
@@ -29,7 +30,7 @@ export default function HistoryTable({ refreshKey, selectedId, onSelect }: Props
 
   useEffect(() => {
     const controller = new AbortController();
-    getTransactionEvaluations(offset, PAGE_SIZE, controller.signal)
+    api.list(offset, PAGE_SIZE, controller.signal)
       .then(page => setLoad({ state: "ready", page }))
       .catch((cause: unknown) => {
         if (!controller.signal.aborted) {
@@ -37,7 +38,7 @@ export default function HistoryTable({ refreshKey, selectedId, onSelect }: Props
         }
       });
     return () => controller.abort();
-  }, [offset, reload, refreshKey]);
+  }, [api, offset, reload, refreshKey]);
 
   const page = load.state === "ready" ? load.page : null;
 
