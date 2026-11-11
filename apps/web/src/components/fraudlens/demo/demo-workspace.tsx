@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { DEMO_TRANSACTIONS, INCOMING_TEMPLATES } from "@/lib/demo/data";
 import {
-  EXAMPLE_CONFIG, evaluateIncoming, recordConfigChange, type ConfigChange, type DemoConfig, type DemoTransaction,
+  EXAMPLE_CONFIG, buildAlerts, evaluateIncoming, recordConfigChange, type ConfigChange, type DemoConfig, type DemoTransaction,
 } from "@/lib/demo/rules";
+import AlertsPanel from "./alerts-panel";
 import ConfigPanel from "./config-panel";
 import TransactionDetail from "./transaction-detail";
 import TransactionMonitor from "./transaction-monitor";
@@ -12,10 +13,11 @@ import TransactionMonitor from "./transaction-monitor";
 const ARRIVAL_EVERY_MS = 7000;
 const MAX_ROWS = 40;
 
-type TabId = "monitor" | "config";
+type TabId = "monitor" | "config" | "alerts";
 const TABS: { id: TabId; label: string; scope: string; stage: string }[] = [
   { id: "monitor", label: "Monitor", scope: "CU-05 · CU-06", stage: "MVP" },
   { id: "config", label: "Configuración", scope: "CU-07 · CU-02", stage: "MVP simplificado" },
+  { id: "alerts", label: "Alertas", scope: "Líneas futuras", stage: "Fuera del MVP" },
 ];
 
 /** Preview mode: everything lives in client state and nothing calls the API. */
@@ -27,6 +29,7 @@ export default function DemoWorkspace() {
   const [live, setLive] = useState(true);
   const [freshId, setFreshId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [readIds, setReadIds] = useState<ReadonlySet<string>>(() => new Set());
   const arrivals = useRef(0);
 
   useEffect(() => {
@@ -47,6 +50,17 @@ export default function DemoWorkspace() {
   }
 
   const selected = transactions.find(item => item.id === selectedId) ?? null;
+  const alerts = buildAlerts(transactions);
+  const unread = alerts.filter(alert => !readIds.has(alert.id)).length;
+
+  function markRead(ids: string[]) {
+    setReadIds(current => new Set([...current, ...ids]));
+  }
+
+  function openTransaction(id: string) {
+    setSelectedId(id);
+    setTab("monitor");
+  }
 
   return (
     <div className="demo">
@@ -70,7 +84,10 @@ export default function DemoWorkspace() {
             className="demo-tab"
             onClick={() => setTab(item.id)}
           >
-            <span>{item.label}</span>
+            <span className="demo-tab-label">
+              {item.label}
+              {item.id === "alerts" && unread > 0 && <span className="count-badge" aria-label={`${unread} sin leer`}>{unread}</span>}
+            </span>
             <span className="demo-tab-meta">{item.scope} · {item.stage}</span>
           </button>
         ))}
@@ -92,6 +109,7 @@ export default function DemoWorkspace() {
           </div>
         )}
         {tab === "config" && <ConfigPanel config={config} changes={changes} onSave={saveConfig} />}
+        {tab === "alerts" && <AlertsPanel alerts={alerts} readIds={readIds} onRead={markRead} onOpen={openTransaction} />}
       </div>
     </div>
   );

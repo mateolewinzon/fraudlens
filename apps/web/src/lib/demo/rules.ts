@@ -158,3 +158,20 @@ export function recordConfigChange(log: readonly ConfigChange[], previous: DemoC
   if (keys.every(key => previous[key] === next[key])) return [...log];
   return [{ author, at: at.toISOString(), previous: { ...previous }, next: { ...next } }, ...log];
 }
+
+/** Future feature (outside the MVP): an alert for every transaction to review or block. */
+export type DemoAlert = { id: string; transactionId: string; severity: "REVIEW" | "BLOCK"; title: string; detail: string; at: string };
+
+export function buildAlerts(list: readonly DemoTransaction[]): DemoAlert[] {
+  return list
+    .filter((item): item is DemoTransaction & { decision: "REVIEW" | "BLOCK" } => item.decision !== "APPROVE")
+    .map(item => ({
+      id: `alert-${item.id}`,
+      transactionId: item.id,
+      severity: item.decision,
+      title: `${DECISION_LABELS[item.decision]} ${item.id}`,
+      detail: `${item.rule} · ${item.merchant}`,
+      at: item.analyzedAt,
+    }))
+    .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
+}
