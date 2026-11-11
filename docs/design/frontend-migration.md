@@ -1,5 +1,7 @@
 # Migración de la interfaz del prototipo
 
+> Registro histórico. La interfaz actual se describe en [laboratorio de pruebas](frontend-testing-lab.md).
+
 La interfaz de evaluación e historial reutiliza el lenguaje visual del prototipo de FraudLens y se conecta a la API actual de la aplicación. El navegador solo prepara y presenta datos; la evaluación, persistencia y paginación permanecen en los Route Handlers existentes.
 
 ## Flujo

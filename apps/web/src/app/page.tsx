@@ -1,5 +1,10 @@
-import EvaluationWorkspace from "@/components/fraudlens/evaluation-workspace";
+import AppShell from "@/components/fraudlens/app-shell";
+import EvaluationLab from "@/components/fraudlens/lab/evaluation-lab";
 
 export default function Home() {
-  return <EvaluationWorkspace />;
+  return (
+    <AppShell>
+      <EvaluationLab />
+    </AppShell>
+  );
 }
