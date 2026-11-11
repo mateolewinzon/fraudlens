@@ -26,8 +26,8 @@ Branch: `feat/frontend-testing-lab` · Delivery: ask-on-risk · Test runner: `np
 |---|---|---|---|---|
 | T1 | S1, S3.1-S3.9, S4 | inline | done | RED: frontend tests failed (missing modules, English errors); GREEN: `npm run check` 42 pass / 2 skipped (integration, need MongoDB). Visual: 1366×657, 768, 390 with mocked fetch, no horizontal overflow. Commit `feat(web): rebuild lab UI...` |
 | T2a | S2 | inline | done | Demo shell + CU-05 monitor (PR #18) |
-| T2b | S2 | inline | done | CU-05 filters + CU-06 detail (PR 4); RED→GREEN demo-filters.test.mjs |
-| T2c | S2 | inline | pending | CU-07 + CU-02 config (PR 5) |
+| T2b | S2 | inline | done | CU-05 filters + CU-06 detail (PR #19); RED→GREEN demo-filters.test.mjs |
+| T2c | S2 | inline | done | CU-07 + CU-02 config (PR 5); RED→GREEN demo-config.test.mjs; visual: block 95 → new TX-N001 (89) = Revisar, older rows keep snapshot |
 | T2d | S2 | inline | pending | Alerts, future/Won't (PR 6) |
 
 ## Log
