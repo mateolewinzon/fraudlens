@@ -24,6 +24,8 @@ La página de inicio (`/`) es un laboratorio para probar la API real: `POST` y `
 - Usa la **configuración de ejemplo del documento de requerimientos**: monto mínimo ARS 10.000 (CU-02), revisar desde 60 y bloquear desde 85 (CU-04), niveles Bajo/Medio/Alto/Crítico (§6). El puntaje va de 0 a 100 como pide CU-03; la API real hoy devuelve 0 a 1.
 - Cada pestaña indica su caso de uso y su estado: MVP, MVP simplificado o futuro fuera del MVP.
 - **Monitor (CU-05)**: transacciones ilustrativas que se suman solas cada 7 segundos (se puede pausar), orden por fecha o puntaje, niveles y decisiones diferenciados, y transacciones aprobadas por la regla de monto mínimo sin ejecutar el modelo.
+- **Filtros (CU-05)**: transacción, usuario, rango de fechas (inclusivo, por día local), nivel (incluye "Sin análisis") y decisión; estado vacío con "Limpiar filtros".
+- **Detalle (CU-06)**: al abrir una transacción muestra puntaje y nivel, decisión y la regla que la produjo, factores (hasta 3), datos recibidos, resumen del historial, fecha de análisis y la configuración vigente cuando se analizó.
 
 ## Diseño responsivo
 

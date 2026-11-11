@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { formatShortDateTime } from "@/lib/client/presentation";
 import {
-  DECISION_LABELS, LEVEL_LABELS, STATUS_LABELS, formatArs, riskLevel, sortTransactions,
-  type DemoConfig, type DemoTransaction, type SortDirection, type SortKey,
+  DECISION_LABELS, EMPTY_FILTERS, LEVEL_LABELS, STATUS_LABELS, filterTransactions, formatArs, riskLevel, sortTransactions,
+  type DemoConfig, type DemoFilters, type DemoTransaction, type SortDirection, type SortKey,
 } from "@/lib/demo/rules";
+import MonitorFilters from "./monitor-filters";
 
 type Props = {
   transactions: DemoTransaction[];
@@ -13,6 +14,8 @@ type Props = {
   live: boolean;
   onToggleLive: () => void;
   freshId: string | null;
+  selectedId: string | null;
+  onSelect: (item: DemoTransaction) => void;
 };
 
 export function LevelBadge({ item }: { item: DemoTransaction }) {
@@ -40,9 +43,10 @@ function SortHeader({ sortKey, label, className, sort, onSort }: {
   );
 }
 
-export default function TransactionMonitor({ transactions, config, live, onToggleLive, freshId }: Props) {
+export default function TransactionMonitor({ transactions, config, live, onToggleLive, freshId, selectedId, onSelect }: Props) {
   const [sort, setSort] = useState<SortState>({ key: "date", direction: "desc" });
-  const rows = sortTransactions(transactions, sort.key, sort.direction);
+  const [filters, setFilters] = useState<DemoFilters>(EMPTY_FILTERS);
+  const rows = sortTransactions(filterTransactions(transactions, filters), sort.key, sort.direction);
 
   function toggleSort(key: SortKey) {
     setSort(current => ({ key, direction: current.key === key && current.direction === "desc" ? "asc" : "desc" }));
@@ -61,6 +65,13 @@ export default function TransactionMonitor({ transactions, config, live, onToggl
           <span className="live-dot" aria-hidden="true" />{live ? "En vivo" : "Pausado"}
         </button>
       </header>
+      <MonitorFilters filters={filters} onChange={setFilters} />
+      {rows.length === 0 ? (
+        <div className="history-empty">
+          <p className="report-empty-title">Ninguna transacción coincide con los filtros</p>
+          <p><button type="button" className="text-button" onClick={() => setFilters(EMPTY_FILTERS)}>Limpiar filtros</button> para ver todas.</p>
+        </div>
+      ) : (
       <div className="table-wrap">
         <table className="history-table monitor-table">
           <thead>
@@ -76,13 +87,13 @@ export default function TransactionMonitor({ transactions, config, live, onToggl
           </thead>
           <tbody aria-live="polite">
             {rows.map(item => (
-              <tr key={item.id} data-decision={item.decision.toLowerCase()} data-fresh={item.id === freshId || undefined}>
+              <tr key={item.id} data-decision={item.decision.toLowerCase()} data-fresh={item.id === freshId || undefined} aria-current={item.id === selectedId || undefined}>
                 <td className="col-date">{formatShortDateTime(item.datetime)}</td>
                 <td>
-                  <span className="row-open-static">
+                  <button type="button" className="row-open" onClick={() => onSelect(item)} aria-label={`Ver detalle de ${item.id}`}>
                     <span className="mono">{item.id}</span>
                     <span className="row-user">{item.userId}</span>
-                  </span>
+                  </button>
                 </td>
                 <td className="num">{formatArs(item.amount)}</td>
                 <td className="num mono">{item.score ?? <span className="muted">s/d</span>}</td>
@@ -94,6 +105,7 @@ export default function TransactionMonitor({ transactions, config, live, onToggl
           </tbody>
         </table>
       </div>
+      )}
     </section>
   );
 }

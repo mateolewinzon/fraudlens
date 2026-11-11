@@ -25,8 +25,8 @@ Branch: `feat/frontend-testing-lab` · Delivery: ask-on-risk · Test runner: `np
 | ID | Specs | Route | Status | Evidence |
 |---|---|---|---|---|
 | T1 | S1, S3.1-S3.9, S4 | inline | done | RED: frontend tests failed (missing modules, English errors); GREEN: `npm run check` 42 pass / 2 skipped (integration, need MongoDB). Visual: 1366×657, 768, 390 with mocked fetch, no horizontal overflow. Commit `feat(web): rebuild lab UI...` |
-| T2a | S2 | inline | done | Demo shell + CU-05 monitor (PR 3) |
-| T2b | S2 | inline | pending | CU-05 filters + CU-06 detail (PR 4) |
+| T2a | S2 | inline | done | Demo shell + CU-05 monitor (PR #18) |
+| T2b | S2 | inline | done | CU-05 filters + CU-06 detail (PR 4); RED→GREEN demo-filters.test.mjs |
 | T2c | S2 | inline | pending | CU-07 + CU-02 config (PR 5) |
 | T2d | S2 | inline | pending | Alerts, future/Won't (PR 6) |
 

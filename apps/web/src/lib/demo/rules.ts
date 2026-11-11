@@ -94,3 +94,41 @@ export function sortTransactions(list: readonly DemoTransaction[], key: SortKey,
 export const LEVEL_LABELS: Record<RiskLevel, string> = { LOW: "Bajo", MEDIUM: "Medio", HIGH: "Alto", CRITICAL: "Crítico" };
 export const DECISION_LABELS: Record<DemoDecision, string> = { APPROVE: "Aprobar", REVIEW: "Revisar", BLOCK: "Bloquear" };
 export const STATUS_LABELS: Record<DemoTransaction["status"], string> = { ANALYZED: "Analizada", RULE_APPROVED: "Aprobada por regla" };
+
+export type LevelFilter = RiskLevel | "NONE" | "";
+
+/** CU-05 minimum filters. Empty strings mean "no filter"; dates are local YYYY-MM-DD, inclusive. */
+export type DemoFilters = {
+  transactionId: string;
+  userId: string;
+  from: string;
+  to: string;
+  level: LevelFilter;
+  decision: DemoDecision | "";
+};
+
+export const EMPTY_FILTERS: DemoFilters = Object.freeze({ transactionId: "", userId: "", from: "", to: "", level: "", decision: "" });
+
+export function levelOf(item: DemoTransaction): RiskLevel | "NONE" {
+  return item.score === null ? "NONE" : riskLevel(item.score, item.config);
+}
+
+function localDay(value: string): string {
+  const date = new Date(value);
+  const pad = (part: number) => String(part).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+export function filterTransactions(list: readonly DemoTransaction[], filters: DemoFilters): DemoTransaction[] {
+  const transactionId = filters.transactionId.trim().toLowerCase();
+  const userId = filters.userId.trim().toLowerCase();
+  return list.filter(item => {
+    const day = localDay(item.datetime);
+    return (!transactionId || item.id.toLowerCase().includes(transactionId)) &&
+      (!userId || item.userId.toLowerCase().includes(userId)) &&
+      (!filters.from || day >= filters.from) &&
+      (!filters.to || day <= filters.to) &&
+      (!filters.level || levelOf(item) === filters.level) &&
+      (!filters.decision || item.decision === filters.decision);
+  });
+}

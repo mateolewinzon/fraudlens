@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DEMO_TRANSACTIONS, INCOMING_TEMPLATES } from "@/lib/demo/data";
 import { EXAMPLE_CONFIG, evaluateIncoming, type DemoConfig, type DemoTransaction } from "@/lib/demo/rules";
+import TransactionDetail from "./transaction-detail";
 import TransactionMonitor from "./transaction-monitor";
 
 const ARRIVAL_EVERY_MS = 7000;
@@ -10,7 +11,7 @@ const MAX_ROWS = 40;
 
 type TabId = "monitor";
 const TABS: { id: TabId; label: string; scope: string; stage: string }[] = [
-  { id: "monitor", label: "Monitor", scope: "CU-05", stage: "MVP" },
+  { id: "monitor", label: "Monitor", scope: "CU-05 · CU-06", stage: "MVP" },
 ];
 
 /** Preview mode: everything lives in client state and nothing calls the API. */
@@ -20,6 +21,7 @@ export default function DemoWorkspace() {
   const [transactions, setTransactions] = useState<DemoTransaction[]>([...DEMO_TRANSACTIONS]);
   const [live, setLive] = useState(true);
   const [freshId, setFreshId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const arrivals = useRef(0);
 
   useEffect(() => {
@@ -33,6 +35,8 @@ export default function DemoWorkspace() {
     }, ARRIVAL_EVERY_MS);
     return () => clearInterval(timer);
   }, [live, config]);
+
+  const selected = transactions.find(item => item.id === selectedId) ?? null;
 
   return (
     <div className="demo">
@@ -64,13 +68,18 @@ export default function DemoWorkspace() {
 
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
         {tab === "monitor" && (
-          <TransactionMonitor
-            transactions={transactions}
-            config={config}
-            live={live}
-            onToggleLive={() => setLive(value => !value)}
-            freshId={freshId}
-          />
+          <div className="monitor-layout" data-detail={selected ? "open" : undefined}>
+            <TransactionMonitor
+              transactions={transactions}
+              config={config}
+              live={live}
+              onToggleLive={() => setLive(value => !value)}
+              freshId={freshId}
+              selectedId={selectedId}
+              onSelect={item => setSelectedId(item.id)}
+            />
+            {selected && <TransactionDetail item={selected} onClose={() => setSelectedId(null)} />}
+          </div>
         )}
       </div>
     </div>
