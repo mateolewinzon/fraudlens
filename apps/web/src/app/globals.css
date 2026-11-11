@@ -312,6 +312,24 @@ h1, h2, h3, p { margin: 0; }
 .log-list li { display: grid; gap: 2px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 @media (max-width: 959px) { .config-layout { grid-template-columns: minmax(0, 1fr); } }
 
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.demo-tab-label { display: inline-flex; align-items: center; gap: 6px; }
+.count-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--bad); color: var(--on-brand); font-size: 11px; font-weight: 700; }
+.alerts { display: grid; gap: 10px; padding: 12px 0 0; }
+.alerts-head, .alerts-note, .alerts-empty { margin-inline: 16px; }
+.alerts-head { padding: 0; }
+.alert-list { margin: 0; padding: 0; list-style: none; }
+.alert { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--border); }
+.alert-mark { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-weight: 700; }
+.alert[data-severity="block"] .alert-mark { background: var(--bad-soft); color: var(--bad); }
+.alert[data-severity="review"] .alert-mark { background: var(--warn-soft); color: var(--warn); }
+.alert:not([data-read]) .alert-title { font-weight: 700; }
+.alert:not([data-read]) { background: color-mix(in oklch, var(--brand-soft) 45%, transparent); }
+.alert-body { display: grid; gap: 1px; min-width: 0; font-size: 13px; }
+.alert-time { color: var(--muted); font-size: 11px; }
+.alert-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px; }
+@media (max-width: 560px) { .alert { grid-template-columns: auto minmax(0, 1fr); } .alert-actions { grid-column: 2; justify-content: flex-start; } }
+
 /* Icon rail: tablets and small laptops */
 @media (max-width: 1279px) {
   :root { --rail: 72px; --gutter: 20px; }
