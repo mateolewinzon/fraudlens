@@ -1,11 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const NAV_ITEMS: { id: string; href: string; label: string; hint: string; icon: string }[] = [
+export type AppMode = "lab" | "demo";
+
+const NAV_ITEMS: { id: AppMode; href: string; label: string; hint: string; icon: string }[] = [
   { id: "lab", href: "/", label: "Laboratorio", hint: "API real", icon: "⚗" },
+  { id: "demo", href: "/?modo=demo", label: "Vista previa", hint: "Próximas funciones", icon: "◇" },
 ];
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({ mode, children }: { mode: AppMode; children: React.ReactNode }) {
   return (
     <div className="app-shell">
       <aside className="rail">
@@ -20,7 +23,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               key={item.id}
               href={item.href}
               className="mode-link"
-              aria-current={item.id === "lab" ? "page" : undefined}
+              aria-current={item.id === mode ? "page" : undefined}
               title={`${item.label}: ${item.hint}`}
             >
               <span className="mode-icon" aria-hidden="true">{item.icon}</span>

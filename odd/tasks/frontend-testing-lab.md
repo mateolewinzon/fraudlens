@@ -25,7 +25,10 @@ Branch: `feat/frontend-testing-lab` · Delivery: ask-on-risk · Test runner: `np
 | ID | Specs | Route | Status | Evidence |
 |---|---|---|---|---|
 | T1 | S1, S3.1-S3.9, S4 | inline | done | RED: frontend tests failed (missing modules, English errors); GREEN: `npm run check` 42 pass / 2 skipped (integration, need MongoDB). Visual: 1366×657, 768, 390 with mocked fetch, no horizontal overflow. Commit `feat(web): rebuild lab UI...` |
-| T2 | S2 | inline | blocked on scope decision | |
+| T2a | S2 | inline | done | Demo shell + CU-05 monitor (PR 3) |
+| T2b | S2 | inline | pending | CU-05 filters + CU-06 detail (PR 4) |
+| T2c | S2 | inline | pending | CU-07 + CU-02 config (PR 5) |
+| T2d | S2 | inline | pending | Alerts, future/Won't (PR 6) |
 
 ## Log
 
@@ -35,4 +38,5 @@ Branch: `feat/frontend-testing-lab` · Delivery: ask-on-risk · Test runner: `np
 - L4 Demo scope options offered (CU-05+CU-06 / +CU-07+CU-02 / +alerts); no answer yet. T1 proceeds independently.
 - L6 T1 verification limits: no `.env.local` and Docker not running, so no real POST/GET was made; layout and flow checked with an in-page `fetch` mock. Single commit (~900 authored lines) because the old component was replaced as one unit.
 - L7 (2026-11-11) User: "vamos por partes. con esto que tenemos ya podriamos abrir un pr??" then "dale, y luego planifiquemos para seguir con lo que nos quedó opcional/pendiente". Delivery: stacked PRs to main (01-client, 02-ui). Demo placeholder removed from the nav; T2 ships in its own PR.
+- L8 (2026-11-11) User: "avancemos con mas prs no? los modos demos restantes" → all demo features, one stacked PR each. Demo uses the requirements' example config (CU-02 ARS 10.000, CU-04 60/85, §6 levels), labeled illustrative.
 - L5 Root cause of S4: single 1320px breakpoint keeps two columns at 1366px; history rows need ~590px min across five `minmax` columns; 248px fixed sidebar down to 700px; no height budget for the form.
