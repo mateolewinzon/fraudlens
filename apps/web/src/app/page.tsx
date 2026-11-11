@@ -1,10 +1,12 @@
-import AppShell from "@/components/fraudlens/app-shell";
+import AppShell, { type AppMode } from "@/components/fraudlens/app-shell";
+import DemoWorkspace from "@/components/fraudlens/demo/demo-workspace";
 import EvaluationLab from "@/components/fraudlens/lab/evaluation-lab";
 
-export default function Home() {
+export default async function Home({ searchParams }: PageProps<"/">) {
+  const mode: AppMode = (await searchParams).modo === "demo" ? "demo" : "lab";
   return (
-    <AppShell>
-      <EvaluationLab />
+    <AppShell mode={mode}>
+      {mode === "demo" ? <DemoWorkspace /> : <EvaluationLab />}
     </AppShell>
   );
 }

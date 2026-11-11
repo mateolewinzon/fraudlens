@@ -1,6 +1,6 @@
 # Laboratorio de pruebas
 
-La página de inicio (`/`) es un laboratorio para probar la API real: `POST` y `GET /api/transaction-evaluations`. Cada envío llama al proveedor de IA y se guarda en MongoDB. La navegación lateral ya está preparada para sumar un modo de vista previa de funciones próximas, que se agregará en un cambio aparte.
+La página de inicio (`/`) es un laboratorio para probar la API real: `POST` y `GET /api/transaction-evaluations`. Cada envío llama al proveedor de IA y se guarda en MongoDB. **Vista previa** (`/?modo=demo`) muestra funciones próximas con datos ilustrativos y no llama a la API.
 
 ## Laboratorio
 
@@ -17,6 +17,13 @@ La página de inicio (`/`) es un laboratorio para probar la API real: `POST` y `
 - El puntaje se muestra como número. **No se derivan niveles de riesgo** (alto, medio, bajo) porque no hay umbrales definidos.
 - Los registros históricos `BLOCK` se muestran como "Bloqueada (registro anterior)", sin reinterpretarlos.
 - `/api/health` solo indica que la app está levantada: no verifica MongoDB ni la IA, por eso la interfaz no muestra un indicador de estado basado en él.
+
+## Vista previa
+
+- Todo vive en el estado del navegador (`src/lib/demo/`); nada llama a la API ni se guarda.
+- Usa la **configuración de ejemplo del documento de requerimientos**: monto mínimo ARS 10.000 (CU-02), revisar desde 60 y bloquear desde 85 (CU-04), niveles Bajo/Medio/Alto/Crítico (§6). El puntaje va de 0 a 100 como pide CU-03; la API real hoy devuelve 0 a 1.
+- Cada pestaña indica su caso de uso y su estado: MVP, MVP simplificado o futuro fuera del MVP.
+- **Monitor (CU-05)**: transacciones ilustrativas que se suman solas cada 7 segundos (se puede pausar), orden por fecha o puntaje, niveles y decisiones diferenciados, y transacciones aprobadas por la regla de monto mínimo sin ejecutar el modelo.
 
 ## Diseño responsivo
 
