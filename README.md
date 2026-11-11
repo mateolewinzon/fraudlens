@@ -71,7 +71,7 @@ fraudlens/
 └── package-lock.json
 ```
 
-La pantalla de inicio ofrece el espacio de trabajo de evaluación e historial conectado a `/api/transaction-evaluations`. El frontend no añade endpoints ni lógica de decisión propia; ver [la migración de interfaz](docs/design/frontend-migration.md). Las carpetas reservadas se conservan con `.gitkeep`; no implican decisiones sobre el dominio.
+La pantalla de inicio es un laboratorio para probar `/api/transaction-evaluations` con escenarios precargados, resultado, historial y detalle. El frontend no añade endpoints ni lógica de decisión propia; ver [laboratorio de pruebas](docs/design/frontend-testing-lab.md). Las carpetas reservadas se conservan con `.gitkeep`; no implican decisiones sobre el dominio.
 
 ## Variables de entorno
 
